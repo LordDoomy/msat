@@ -37,6 +37,9 @@
   "contact_val": "info@mentorstudios.es",
   "clearance": "CLEARANCE",
   "clearance_val": "LEVEL-3 AUTHORIZED",
+  "choose_color": "CHOOSE MAIN COLOR",
+  "choose_language": "CHOOSE LANGUAGE",
+  "configuration": "CONFIGURATION",
   "info_retro": "Retro-futuristic audio panel.",
   "info_instant": "Instant playback + custom button mapping & management.",
   "close_terminal": "[ CLOSE TERMINAL ]",
@@ -60,7 +63,7 @@
   "add_module": "ADD MODULE",
   "stop_all": "STOP ALL",
   "navigate": "T:↑↓ NAVIGATE",
-  "enter_select": "ENTER: SELECT",
+  "enter_select": "ENTER/SPACE: SELECT",
   "ready": "READY  //  NO AUDIO PLAYING",
   "playing": "PLAYING:",
   "remove_module": "REMOVE MODULE",
@@ -75,5 +78,9 @@
   "language": "LANGUAGE",
   "exit": "EXIT",
   "spanish": "ESPAÑOL",
-  "english": "ENGLISH"
+  "english": "ENGLISH",
+  "theme_orange": "ORANGE",
+  "theme_cyan": "CYAN",
+  "theme_purple": "PURPLE",
+  "theme_lime": "LIME"
 }

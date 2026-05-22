@@ -2,7 +2,7 @@ import sys
 from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
                                QHBoxLayout, QGridLayout, QLabel, QPushButton, 
                                QLineEdit, QFrame, QDialog, QMessageBox, QFileDialog,
-                               QScrollArea, QMenu)
+                               QScrollArea, QMenu, QRadioButton, QButtonGroup)
 from PySide6.QtCore import Qt, QTimer, QThread, Signal, QSize, QRect
 from PySide6.QtGui import QFont, QColor, QCursor, QIcon
 import pygame
@@ -58,6 +58,34 @@ ORANGE_DIM  = "#7A3300"
 ORANGE_DARK = "#3D1900"
 TEXT_DIM    = "#4a2200"
 GREEN_DOT   = "#00FF88"
+
+THEMES = {
+    "orange": {
+        "accent": "#FF6B00",
+        "accent_glow": "#FF8C2A",
+        "accent_dim": "#7A3300",
+        "accent_dark": "#3D1900"
+    },
+    "cyan": {
+        "accent": "#00D0FF",
+        "accent_glow": "#7CEBFF",
+        "accent_dim": "#1D6D7A",
+        "accent_dark": "#103E47"
+    },
+    "purple": {
+        "accent": "#BB42FF",
+        "accent_glow": "#D684FF",
+        "accent_dim": "#6C2F74",
+        "accent_dark": "#3B1541"
+    },
+    "lime": {
+        "accent": "#9CFF00",
+        "accent_glow": "#D3FF66",
+        "accent_dim": "#728B1C",
+        "accent_dark": "#3B490A"
+    }
+}
+DEFAULT_THEME = "orange"
 RED_STOP    = "#CC2200"
 RED_DIM     = "#5a0e00"
 
@@ -330,6 +358,164 @@ class SystemInfo(QDialog):
         self.setStyleSheet(f"QDialog {{ background-color: {BG_PANEL}; }}")
 
 
+class SettingsDialog(QDialog):
+    def __init__(self, parent, selected_theme, selected_language):
+        super().__init__(parent)
+        self.selected_theme = selected_theme
+        self.selected_language = selected_language
+        self.setWindowTitle(i18n("configuration"))
+        self.setGeometry(0, 0, 520, 260)
+        self.setModal(True)
+
+        layout = QVBoxLayout()
+
+        title = QLabel(i18n("configuration"))
+        title.setFont(QFont(*FONT_HEAD))
+        title.setStyleSheet(f"color: {ORANGE};")
+        layout.addWidget(title)
+
+        sep = QFrame()
+        sep.setFrameShape(QFrame.HLine)
+        sep.setStyleSheet(f"background-color: {ORANGE_DARK};")
+        layout.addWidget(sep)
+
+        color_label = QLabel(i18n("choose_color"))
+        color_label.setFont(QFont(*FONT_SMALL))
+        color_label.setStyleSheet(f"color: {ORANGE_DIM};")
+        layout.addWidget(color_label)
+
+        theme_layout = QHBoxLayout()
+        self.theme_group = QButtonGroup(self)
+        self.theme_buttons = []
+        for theme_id in THEMES.keys():
+            theme_name = i18n(f"theme_{theme_id}") or theme_id.capitalize()
+            button = QRadioButton(theme_name)
+            button.setStyleSheet(self._radio_style())
+            button.theme_id = theme_id
+            if theme_id == selected_theme:
+                button.setChecked(True)
+            button.toggled.connect(self._preview_theme)
+            self.theme_group.addButton(button)
+            self.theme_buttons.append(button)
+            theme_layout.addWidget(button)
+        layout.addLayout(theme_layout)
+
+        lang_label = QLabel(i18n("choose_language"))
+        lang_label.setFont(QFont(*FONT_SMALL))
+        lang_label.setStyleSheet(f"color: {ORANGE_DIM};")
+        layout.addWidget(lang_label)
+
+        language_layout = QHBoxLayout()
+        self.language_group = QButtonGroup(self)
+        self.language_buttons = []
+        for lang_code, lang_name in lang_manager.get_available_languages().items():
+            label_text = i18n(lang_code) if i18n(lang_code) else lang_name.upper()
+            button = QRadioButton(label_text)
+            button.setStyleSheet(self._radio_style())
+            button.lang_code = lang_code
+            if lang_code == selected_language:
+                button.setChecked(True)
+            self.language_group.addButton(button)
+            self.language_buttons.append(button)
+            language_layout.addWidget(button)
+        layout.addLayout(language_layout)
+
+        btn_layout = QHBoxLayout()
+        btn_layout.addStretch()
+
+        self.cancel_btn = QPushButton(f"[ {i18n('cancel')} ]")
+        self.cancel_btn.clicked.connect(self.reject)
+        btn_layout.addWidget(self.cancel_btn)
+
+        self.confirm_btn = QPushButton(f"[ {i18n('confirm')} ]")
+        self.confirm_btn.clicked.connect(self.accept)
+        btn_layout.addWidget(self.confirm_btn)
+
+        layout.addLayout(btn_layout)
+        self.setLayout(layout)
+        self.setStyleSheet(f"QDialog {{ background-color: {BG_PANEL}; }}")
+        self._update_preview_theme()
+
+    def _radio_style(self):
+        return f"""
+            QRadioButton {{
+                color: {ORANGE};
+                spacing: 8px;
+                padding: 4px;
+            }}
+            QRadioButton::indicator {{
+                width: 16px;
+                height: 16px;
+                border-radius: 8px;
+                border: 1px solid {ORANGE};
+                background: transparent;
+            }}
+            QRadioButton::indicator:checked {{
+                background-color: {ORANGE};
+                border: 1px solid {ORANGE};
+            }}
+        """
+
+    def _update_preview_theme(self):
+        preview_theme = self.selected_theme
+        for button in self.theme_group.buttons():
+            if button.isChecked():
+                preview_theme = button.theme_id
+                break
+        colors = THEMES.get(preview_theme, THEMES[DEFAULT_THEME])
+        accent = colors["accent"]
+        accent_dark = colors["accent_dark"]
+        accent_dim = colors["accent_dim"]
+
+        self.cancel_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {BG_PANEL};
+                color: {accent};
+                border: 1px solid {accent_dark};
+                padding: 6px;
+                font: bold 10pt \"{FONT_FAMILY}\";
+            }}
+            QPushButton:hover {{
+                background-color: {accent};
+                color: {BG};
+            }}
+        """)
+
+        self.confirm_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {accent};
+                color: {BG};
+                border: none;
+                padding: 6px;
+                font: bold 10pt \"{FONT_FAMILY}\";
+            }}
+            QPushButton:hover {{
+                background-color: {colors['accent_glow']};
+            }}
+        """)
+
+        for button in self.theme_buttons + self.language_buttons:
+            button.setStyleSheet(self._radio_style())
+
+    def _preview_theme(self):
+        self._update_preview_theme()
+
+    def accept(self):
+        selected_theme = self.selected_theme
+        for button in self.theme_group.buttons():
+            if button.isChecked():
+                selected_theme = button.theme_id
+                break
+        selected_lang = self.selected_language
+        for button in self.language_group.buttons():
+            if button.isChecked():
+                selected_lang = button.lang_code
+                break
+        self.selected_theme = selected_theme
+        self.selected_language = selected_lang
+        super().accept()
+
+
 # Aplicación principal
 class MentorAudioApp(QMainWindow):
     #Aplicar estilos generales a la aplicación
@@ -368,12 +554,12 @@ class MentorAudioApp(QMainWindow):
         self.blink_state  = True
         self.playing_idx  = None   # Índice del botón actualmente reproduciendo, o None si no hay ninguno
         self.btn_refs     = {}     # Diccionario para almacenar referencias a widgets de cada botón por índice, ej: {0: {"btn": ..., "outer": ..., "name": ...}, ...}
+        self.theme        = DEFAULT_THEME
+        self.language     = "es"
         
-        #Carga los estilos antes de construir la interfaz para evitar parpadeos y asegurar que todo se renderice con el tema correcto desde el inicio.
+        # Cargar preferencias de idioma y tema antes de aplicar estilos
+        self._load_preferences()
         self._apply_styles()
-        
-        # Cargar idioma guardado
-        self._load_language_preference()
         
         # Crear carpeta de audios si no existe
         if not os.path.exists(AUDIO_FOLDER):
@@ -402,31 +588,45 @@ class MentorAudioApp(QMainWindow):
         self._poll_music()
         self.show()
 
-    # Persistencia de idioma
-    def _load_language_preference(self):
+    # Persistencia de idioma y tema
+    def _load_preferences(self):
         try:
             with open(LANGUAGE_CONFIG) as f:
                 config = json.load(f)
-                lang_manager.load_language(config.get("language", "es"))
+                self.language = config.get("language", "es")
+                self.theme = config.get("theme", DEFAULT_THEME)
         except Exception:
-            lang_manager.load_language("es")
+            self.language = "es"
+            self.theme = DEFAULT_THEME
 
-    # Guarda el idioma seleccionado
-    def _save_language_preference(self, lang):
+        self._apply_theme(self.theme)
+        lang_manager.load_language(self.language)
+
+    def _save_preferences(self):
         try:
             with open(LANGUAGE_CONFIG, "w") as f:
-                json.dump({"language": lang}, f)
+                json.dump({"language": self.language, "theme": self.theme}, f, indent=2)
         except Exception:
             pass
-    
-    # Cambia el idioma
+
+    def _apply_theme(self, theme_name):
+        theme = THEMES.get(theme_name, THEMES[DEFAULT_THEME])
+        global ORANGE, ORANGE_GLOW, ORANGE_DIM, ORANGE_DARK, TEXT_DIM
+        ORANGE = theme["accent"]
+        ORANGE_GLOW = theme["accent_glow"]
+        ORANGE_DIM = theme["accent_dim"]
+        ORANGE_DARK = theme["accent_dark"]
+        TEXT_DIM = theme["accent_dim"]
+        self.theme = theme_name
+
     def _change_language(self, lang):
         self._stop_all()
+        self.language = lang
         lang_manager.load_language(lang)
-        self._save_language_preference(lang)
+        self._save_preferences()
         self.setWindowTitle(i18n("app_title"))
         self._rebuild_ui()
-    
+
     # Reconstruye la interfaz con el nuevo idioma
     def _rebuild_ui(self):
 
@@ -495,17 +695,15 @@ class MentorAudioApp(QMainWindow):
             }}
         """)
         
-        # Opción de información del sistema
-        info_action = menu.addAction("// " + i18n("system_info"))
-        info_action.triggered.connect(self._cmd_about)
+        # Opción de configuración
+        config_action = menu.addAction("// " + i18n("configuration"))
+        config_action.triggered.connect(self._cmd_settings)
         
         menu.addSeparator()
         
-        # Submenu de idiomas
-        lang_submenu = menu.addMenu("// " + i18n("language"))
-        for lang_code, lang_name in lang_manager.get_available_languages().items():
-            lang_action = lang_submenu.addAction(lang_name)
-            lang_action.triggered.connect(lambda checked=False, l=lang_code: self._change_language(l))
+        # Opción de información del sistema
+        info_action = menu.addAction("// " + i18n("system_info"))
+        info_action.triggered.connect(self._cmd_about)
         
         menu.addSeparator()
         
@@ -515,6 +713,24 @@ class MentorAudioApp(QMainWindow):
         
         menu.setMinimumWidth(220)
         menu.exec(pos)
+    
+    def _cmd_settings(self):
+        dlg = SettingsDialog(self, selected_theme=self.theme, selected_language=self.language)
+        if dlg.exec() == QDialog.Accepted:
+            theme_changed = dlg.selected_theme != self.theme
+            language_changed = dlg.selected_language != self.language
+            if theme_changed:
+                self._stop_all()
+                self._apply_theme(dlg.selected_theme)
+                self.theme = dlg.selected_theme
+            if language_changed:
+                self._stop_all()
+                self.language = dlg.selected_language
+                lang_manager.load_language(self.language)
+            if theme_changed or language_changed:
+                self._save_preferences()
+                self.setWindowTitle(i18n("app_title"))
+                self._rebuild_ui()
     
     #Muestra/oculta el panel derecho de sistema.
     def _toggle_system_panel(self):
