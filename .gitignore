@@ -1,0 +1,73 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+*.pyi
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# PySide6 / Qt build artifacts
+*.qmlc
+*.qrc
+
+# Editor directories and files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Runtime files
+*.log
+*.pot
+*.mo
+
+# Secrets and environment files
+.env
+.env.*
+*.key
+*.pem
+*.crt
+*.cer
+*.der
+
+# Databases
+*.sqlite3
+*.sqlite
+*.db
+
+# Packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Test and coverage artifacts
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.coverage
+
+# Other generated artifacts
+*.swp
+*~
+
+# Local settings
+local_settings.py

@@ -2,74 +2,90 @@
 
 Aplicación de escritorio para gestionar y reproducir archivos de audio desde un panel de botones.
 
-## Descripción
+## Resumen
 
-Este proyecto ofrece una interfaz gráfica retro futurista para agregar, reproducir y detener módulos de audio. Está diseñado con PySide6 y usa `pygame` como backend de reproducción de audio.
+Esta aplicación ofrece una interfaz gráfica moderna para agregar, reproducir y detener módulos de audio usando `PySide6` y `pygame`.
 
-## Características
+## Características principales
 
 - Interfaz gráfica con PySide6.
-- Reproducción de audio con pygame.
-- Añadir nuevos módulos de audio mediante un diálogo.
-- Panel derecho de estado del sistema.
-- Soporte multilenguaje mediante archivos JSON en `lang/`.
-- Configuración persistente en `msat_audio_config.json`.
-
-## Estructura del proyecto
-
-- `msat.py` - Script principal de la aplicación.
-- `audio_files/` - Carpeta donde se almacenan los archivos de audio usados por la aplicación.
-- `lang/` - Archivos de traducción JSON para los idiomas disponibles.
-- `msat_audio_config.json` - Configuración de los módulos de audio guardada por la aplicación.
-- `msat_language_config.json` - Configuración de idioma guardada por la aplicación.
+- Reproducción de audio con `pygame`.
+- Soporte multilenguaje a partir de archivos JSON en `lang/`.
+- Configuración persistente de los módulos en `msat_audio_config.json`.
+- Gestión de audio mediante botones configurables.
 
 ## Requisitos
 
-- Python 3.11+ (o 3.14 como en el entorno actual).
-- PySide6
-- pygame
+- Python 3.11+ (también compatible con Python 3.14).
+- `PySide6`
+- `pygame`
 
 ## Instalación
 
-1. Crear y activar un entorno virtual (opcional pero recomendado):
+1. Crear y activar un entorno virtual (recomendado):
+
+Para PowerShell:
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 ```
 
+Para Windows CMD:
+
+```cmd
+python -m venv .venv
+.\.venv\Scripts\activate.bat
+```
+
+Para Linux/macOS:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
 2. Instalar dependencias:
 
-```powershell
+```bash
 pip install PySide6 pygame
 ```
 
 ## Uso
 
-Ejecutar la aplicación desde la carpeta del proyecto:
+Ejecuta la aplicación desde la carpeta del proyecto:
 
-```powershell
+```bash
 python msat.py
 ```
 
-## Flujo de la aplicación
+## Estructura del proyecto
 
-1. Al iniciar, el proyecto carga el idioma guardado y la configuración de los botones.
-2. Se inicializa la interfaz gráfica y el motor de audio `pygame.mixer`.
-3. El usuario puede agregar nuevos módulos de audio usando el diálogo correspondiente.
-4. Cada módulo se muestra como un botón que reproduce el audio asociado.
-5. Al cambiar el idioma, la reproducción activa se detiene automáticamente.
+- `msat.py` - Script principal de la aplicación.
+- `audio_files/` - Carpeta que contiene los archivos de audio del proyecto.
+- `lang/` - Traducciones en JSON para los idiomas disponibles.
+- `msat_audio_config.json` - Configuración de módulos de audio.
+- `msat_language_config.json` - Configuración de idioma.
 
-## Localización
+## Configuración y datos
 
-El proyecto usa el directorio `lang/` para potenciar la localización. Cada archivo JSON contiene las claves de texto utilizadas en la interfaz.
+- `audio_files/` debe contener los archivos de audio que usa la aplicación.
+- `lang/` maneja la localización y permite agregar nuevos idiomas fácilmente.
+- Los archivos JSON de configuración guardan los módulos y la selección de idioma entre sesiones.
 
-## Notas importantes
+## Seguridad y buenas prácticas
 
-- Asegúrate de que `audio_files/` exista y contenga los archivos `.mp3`, `.wav` u otros formatos soportados.
-- Si la aplicación no encuentra un archivo de audio, mostrará un mensaje de error.
-- El archivo `msat_audio_config.json` guarda la lista de módulos configurados.
+- El repositorio incluye un `.gitignore` actualizado para evitar subir archivos de entorno, caches y configuraciones locales.
+- No agregues archivos sensibles como `.env`, claves privadas, certificados o bases de datos locales al repositorio.
+- `audio_files/` puede contener datos pesados; controla bien qué activos subes al repositorio si deseas mantenerlo liviano.
 
-## Contacto
+## Contribuciones
+
+Si deseas mejorar el proyecto, puedes:
+
+- Extender la localización en `lang/`.
+- Mejorar la interfaz y la experiencia de usuario.
+
+## Licencia
 
 Proyecto personal.
