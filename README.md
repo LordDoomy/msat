@@ -1,6 +1,6 @@
-# Programa Botones Audio
+# M.S.A.T. - Mentor Studios Audio Terminal
 
-Aplicación de escritorio en Python para gestionar y reproducir archivos de audio desde un panel de botones.
+Aplicación de escritorio para gestionar y reproducir archivos de audio desde un panel de botones.
 
 ## Descripción
 
